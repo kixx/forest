@@ -12,13 +12,13 @@ public class ABTree {
         if (a < 2 || a > b / 2) throw new IllegalArgumentException("Require 2 <= a <= b/2");
         this.a = a;
         this.b = b;
-        this.root = new Node(); // initially a leaf
+        this.root = new ABTreeLeaf(); // initially a leaf
     }
 
     public void insert(int key) {
         Node r = root;
         if (isFull(r)) {
-            Node newRoot = new Node();
+            ABTreeInnerNode newRoot = new ABTreeInnerNode();
             newRoot.children.add(r);
             splitChild(newRoot, 0);
             root = newRoot;
@@ -34,30 +34,37 @@ public class ABTree {
             }
             node.keys.add(i, key);
         } else {
+            ABTreeInnerNode innerNode = (ABTreeInnerNode) node;
             int i = findChildIndex(node, key);
             // Check if i is within bounds before accessing
-            if (i >= node.children.size()) {
-                i = node.children.size() - 1;
+            if (i >= innerNode.children.size()) {
+                i = innerNode.children.size() - 1;
             }
-            Node child = node.children.get(i);
+            Node child = innerNode.children.get(i);
             if (isFull(child)) {
-                splitChild(node, i);
+                splitChild(innerNode, i);
                 if (key > node.keys.get(i)) { // Changed from >= to > to fix potential issue
                     i++;
                 }
                 // Ensure i is within bounds after increment
-                if (i >= node.children.size()) {
-                    i = node.children.size() - 1;
+                if (i >= innerNode.children.size()) {
+                    i = innerNode.children.size() - 1;
                 }
             }
-            insertNonFull(node.children.get(i), key);
+            insertNonFull(innerNode.children.get(i), key);
         }
     }
 
 
-    private void splitChild(Node parent, int index) {
+    private void splitChild(ABTreeInnerNode parent, int index) {
         Node fullNode = parent.children.get(index);
-        Node newNode = new Node();
+        Node newNode;
+
+        if (fullNode.isLeaf()) {
+            newNode = new ABTreeLeaf();
+        } else {
+            newNode = new ABTreeInnerNode();
+        }
 
         int mid = fullNode.keys.size() / 2;
 
@@ -67,8 +74,10 @@ public class ABTree {
 
         // Split children if internal
         if (!fullNode.isLeaf()) {
-            newNode.children.addAll(fullNode.children.subList(mid + 1, fullNode.children.size()));
-            fullNode.children.subList(mid + 1, fullNode.children.size()).clear();
+            ABTreeInnerNode innerFullNode = (ABTreeInnerNode) fullNode;
+            ABTreeInnerNode innerNewNode = (ABTreeInnerNode) newNode;
+            innerNewNode.children.addAll(innerFullNode.children.subList(mid + 1, innerFullNode.children.size()));
+            innerFullNode.children.subList(mid + 1, innerFullNode.children.size()).clear();
         }
 
         // Promote middle key of fullNode to parent
@@ -97,8 +106,9 @@ public class ABTree {
         if (node.isLeaf()) {
             System.out.println(indent + "Leaf: " + node.keys);
         } else {
+            ABTreeInnerNode innerNode = (ABTreeInnerNode) node;
             System.out.println(indent + "Internal: " + node.keys);
-            for (Node child : node.children) {
+            for (Node child : innerNode.children) {
                 printTree(child, depth + 1);
             }
         }
