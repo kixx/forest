@@ -3,14 +3,6 @@ package org.bsdro.forest.ab;
 import java.util.*;
 
 public class ABTree {
-    private class Node {
-        List<Integer> keys = new ArrayList<>();
-        List<Node> children = new ArrayList<>();
-
-        boolean isLeaf() {
-            return children.isEmpty();
-        }
-    }
 
     private final int a; // min children
     private final int b; // max children
