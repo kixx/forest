@@ -53,8 +53,8 @@ public class ABTree {
             int i = Collections.binarySearch(node.keys, key);
             if (i < 0)  {
                 i = -i - 1;
+                node.keys.add(i, key);
             }
-            node.keys.add(i, key);
         } else {
             ABTreeInnerNode innerNode = (ABTreeInnerNode) node;
             int i = findChildIndex(node, key);
