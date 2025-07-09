@@ -193,6 +193,12 @@ public class ABTree {
         // Ensure the child has at least 'a' keys before descending
         if (child.keys.size() < a) {
             ensureChildHasMinKeys(innerNode, childIndex);
+            // After ensuring min keys, childIndex might be invalid due to merging
+            // Recalculate childIndex
+            childIndex = -i - 1;
+            if (childIndex >= innerNode.children.size()) {
+                childIndex = innerNode.children.size() - 1;
+            }
         }
 
         return removeFromNode(innerNode.children.get(childIndex), key);
