@@ -237,12 +237,12 @@ public class ABTree {
             leftInner.children.addAll(rightInner.children);
         }
 
-        // Remove the right child from parent
+        // Remove the right child from the parent
         parent.children.remove(index + 1);
     }
 
     private void ensureChildHasMinKeys(ABTreeInnerNode parent, int childIndex) {
-        Node child = parent.children.get(childIndex);
+
 
         // Try to borrow from left sibling
         if (childIndex > 0) {
